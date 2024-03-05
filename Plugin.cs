@@ -14,8 +14,14 @@ public class ReferencesPlugin : TerrariaPlugin
         AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
         Directory.CreateDirectory(ReferencesDirectoryPath);
 
-        files = Directory.GetFiles(ReferencesDirectoryPath, "*.dll", SearchOption.AllDirectories)
-            .ToDictionary(i => Path.GetFileName(i), i => i);
+        files = new Dictionary<string, string>();
+        foreach (string path in Directory.GetFiles(ReferencesDirectoryPath, "*.dll", SearchOption.AllDirectories))
+        {
+            string fileName = Path.GetFileName(path);
+            if (files.ContainsKey(fileName))
+                continue;
+            files.Add(fileName, path);
+        }
 
         ServerApi.LogWriter.PluginWriteLine(this, "The references have been successfully uploaded.", TraceLevel.Info);
     }
